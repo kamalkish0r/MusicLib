@@ -1,11 +1,13 @@
 import os
 import secrets
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, Response, make_response, send_file
 from musicapp.models import User, Song
-from musicapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, SongForm
+from musicapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, SongForm, SearchForm
 from musicapp import app, bcrypt, db
 from flask_login import login_user, logout_user, current_user, login_required
 from mutagen.mp3 import MP3
+from werkzeug.exceptions import RequestEntityTooLarge
+from sqlalchemy import or_
 
 
 @app.route('/')
@@ -80,6 +82,12 @@ def account():
     return render_template('account.html', title='Account', form=form)
 
 
+@app.errorhandler(RequestEntityTooLarge)
+def handle_413_error(e):
+    flash("File SIZE LIMIT EXCEEDED! Only files of size less than 20MB are allowed.", 'danger')
+    return redirect(request.url)
+
+
 def save_song(song):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(song.filename)
@@ -96,6 +104,10 @@ def upload():
     form = SongForm()
     if form.validate_on_submit():
         song_file = form.song.data
+        # if not song_file.filename.endswith('.mp3'):
+        #     flash('Only mp3 files are allowed!', 'danger')
+        #     return redirect(url_for('upload'))
+
         audio = MP3(song_file)
         title = audio["TIT2"].text[0] if "TIT2" in audio else "Unknown Title"
         artist = audio["TPE1"].text[0] if "TPE1" in audio else "Unknown Artist"
@@ -111,3 +123,32 @@ def upload():
         flash(f'{title} has been uploaded!', 'success')
         return redirect(url_for('upload'))
     return render_template('upload_song.html', title='Upload Song', form=form)
+
+
+@app.route('/get_audio')
+@login_required
+def get_audio(song_path):
+    return send_file(song_path, mimetype="audio/mp3", as_attachment=True)
+
+
+@app.route('/play/<int:song_id>')
+@login_required
+def song(song_id):
+    song = Song.query.get_or_404(song_id)
+    song_file = url_for('static', filename='uploads/' + song.filename)
+    return render_template('song.html', title=song.title, song=song, music=song_file)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        search_input_text = form.search_input_text
+        results = Song.query.filter(
+            or_(Song.title.contains(search_input_text),
+                Song.artist.contains(search_input_text),
+                Song.album.contains(search_input_text))).all()
+
+        return render_template('search_results.html', results=results, search_input_text=search_input_text)
+    return redirect(url_for('home'))

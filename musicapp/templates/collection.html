@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
   {% if songs %}
+    <legend class="border-bottom mb-4">
+      All Songs
+    </legend>
     {% for song in songs %}
       <article class="media content-section">
         <div class="media-body">
-          <a href="#" class="title">
+          <a href="{{ url_for('song', song_id=song.id) }}" class="title">
             <div class="song-body d-flex justify-content-between">
               <small>{{ song.title }}</small>
               <small>{{ song.artist }}</small>

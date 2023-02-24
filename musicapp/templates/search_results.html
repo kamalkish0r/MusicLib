@@ -2,24 +2,23 @@
 {% block content %}
   {% if songs %}
     <legend class="border-bottom mb-4">
-      Your Songs
+      Search results for "{{ search_input_text }}"
     </legend>
     {% for song in songs %}
       <article class="media content-section">
         <div class="media-body">
-          <a href="{{ url_for('song', song_id=song.id) }}"
-             class="song-body style-none">
+          <a href="{{ url_for('play_song', id=song.id) }}" class="title">
             <div class="song-body d-flex justify-content-between">
               <small>{{ song.title }}</small>
-              <small>{{ song.artist }}</small>
-              <small>{{ song.album }}</small>
+              <small>by {{ song.artist }}</small>
+              <small>from {{ song.album }}</small>
             </div>
           </a>
         </div>
       </article>
     {% endfor %}
   {% else %}
-    <h2>Your songs will appear here.</h2>
-    <p class="text-muted">Please upload songs by clicking on upload button!</p>
+    <h2>No results found for "{{ search_input_text }}"</h2>
+    <p class="text-muted">Please try searching something else!</p>
   {% endif %}
 {% endblock content %}

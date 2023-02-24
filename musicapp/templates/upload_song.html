@@ -9,12 +9,12 @@
         </legend>
         <div class="form-group">
           {{ form.song.label(class='form-control-label') }}
+          {{ form.song(class='form-control') }}
           {% if form.song.errors %}
-            <div class="invalid-feedback">
-              {% for error in form.song.errors %}<span>{{ error }}</span>{% endfor %}
-            </div>
-          {% else %}
-            {{ form.song(class='form-control') }}
+            {% for error in form.song.errors %}
+              <span class="text-danger">{{ error }}</span>
+              <br />
+            {% endfor %}
           {% endif %}
         </div>
       </fieldset>

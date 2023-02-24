@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+  {% if song %}
+    <legend class="mb-1">
+      {{ song.title }}
+    </legend>
+    <p class="text-muted mb-4 border-bottom">
+      By <strong>{{ song.artist }}</strong> from <strong>{{ song.album }}</strong>
+    </p>
+    <article class="media content-section">
+      <div class="media-body">
+        <audio controls autoplay class="w-100">
+          <source src="{{ music }}" type="audio/mp3"/>
+          Your browser does not support the audio tag.
+        </audio>
+      </div>
+    </article>
+  {% else %}
+    <h2>Song does not exist!</h2>
+    <p class="text-muted">Try to play other songs.</p>
+  {% endif %}
+{% endblock content %}

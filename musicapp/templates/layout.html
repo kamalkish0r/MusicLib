@@ -36,7 +36,7 @@
             <div class="navbar-nav mr-auto">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-                <a class="nav-item nav-link" href="{{ url_for('collection') }}">All Songs</a>
+                <a class="nav-item nav-link" href="{{ url_for('collection') }}">Collection</a>
                 <a class="nav-item nav-link" href="{{ url_for('upload') }}">Upload</a>
               {% endif %}
             </div>
@@ -45,13 +45,15 @@
               {% if current_user.is_authenticated %}
                 <form class="form-inline my-2 my-lg-0 d-flex justify-content-evenly"
                       action="{{ url_for('search') }}"
-                      method="get">
-                  <input class="form-control mr-sm-2"
-                         type="text"
-                         placeholder="Search"
+                      method="post">
+                  {{ form.hidden_tag() }}
+                  <input type="search"
+                         name="search_input_text"
+                         placeholder="Enter song title, artist or ablum.."
                          aria-label="Search"
-                         name="search_input_text"/>
-                  <button class="btn btn-primary" type="submit">Search</button>
+                         class="form-control me-2"
+                         required/>
+                  <button type="submit" class="btn btn-dark">Search</button>
                 </form>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>

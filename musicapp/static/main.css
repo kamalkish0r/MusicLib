@@ -50,12 +50,6 @@ a.article-title:hover {
     white-space: pre-line;
 }
 
-.article-img {
-    height: 65px;
-    width: 65px;
-    margin-right: 16px;
-}
-
 .article-metadata {
     padding-bottom: 1px;
     margin-bottom: 4px;
@@ -67,18 +61,6 @@ a.article-title:hover {
     text-decoration: none;
 }
 
-.article-svg {
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-}
-
-.account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
-}
 
 .account-heading {
     font-size: 2.5rem;

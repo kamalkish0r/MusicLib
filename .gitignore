@@ -1,4 +1,6 @@
 musicapp/static/uploads/
 musicapp/instance/
 instance/
+
 __pycache__/
+env/

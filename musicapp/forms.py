@@ -77,7 +77,30 @@ class SongForm(FlaskForm):
                 raise ValidationError(
                     'Song size too large! Upload songs of size less than 20MB.')
 
+class SongMetadataForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    artist = StringField('Artist', validators=[DataRequired()])
+    album = StringField('Album', validators=[DataRequired()])
+    submit = SubmitField('Save Song')
+
 
 class SearchForm(FlaskForm):
     search_input_text = StringField('What you want to listend to..?', validators=[DataRequired()])
     submit = SubmitField('Search')
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError(
+                f'No such user exists! Please check your email and try again.')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[
+                             DataRequired(), Length(min=6, max=40)])
+    confirm_password = PasswordField('Confirm Password', validators=[
+                                     DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')

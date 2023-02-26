@@ -1,37 +1,35 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from musicapp.config import Config
 
 
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'bff174118bab515992e19912ccc83e8d'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'musicapp/static/uploads')
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
-app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
-mail = Mail(app)
-
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+mail = Mail()
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
 
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-app.add_url_rule(
-    "/song/download/<int:song_id>", endpoint="download", build_only=True
-)
+    db.init_app(app)
+    mail.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
 
-from musicapp import routes
+    from musicapp.users.routes import users
+    from musicapp.songs.routes import songs
+    from musicapp.main.routes import main
+    from musicapp.errors.handlers import errors
+    app.register_blueprint(users)
+    app.register_blueprint(songs)
+    app.register_blueprint(main)
+    app.register_blueprint(errors)
+
+    return app

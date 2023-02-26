@@ -36,14 +36,14 @@
       </fieldset>
       <div class="form-group mb-2">{{ form.submit(class='btn btn-outline-info') }}</div>
       <small class="text-muted ml-2">
-        <a href="{{ url_for('password_reset_request') }}">Forgot Password?</a>
+        <a href="{{ url_for('users.password_reset_request') }}">Forgot Password?</a>
       </small>
     </form>
   </div>
   <div class="border-top pt-3">
     <small class="text-muted">
       Need An Account?
-      <a class="ml-2" href="{{ url_for('register') }}">Sign Up</a>
+      <a class="ml-2" href="{{ url_for('users.register') }}">Sign Up</a>
     </small>
   </div>
 {% endblock content %}

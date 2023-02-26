@@ -1,8 +1,4 @@
-import os
-import imghdr
-from flask import current_app
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileField
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
@@ -61,33 +57,6 @@ class UpdateAccountForm(FlaskForm):
                     f'{email.data} is taken. Please choose a different Email.')
 
 
-class SongForm(FlaskForm):
-    song = FileField('Select an MP3 file: ', validators=[
-                     DataRequired()])
-    submit = SubmitField('Upload')
-
-    def validate_song(self, song):
-        if song.data:
-            _, ext = os.path.splitext(song.data.filename)
-            ext = ext.lower()
-            if ext != '.mp3':
-                raise ValidationError('Only mp3 files allowed.')
-
-            if song.data.content_length > current_app.config['MAX_CONTENT_LENGTH']:
-                raise ValidationError(
-                    'Song size too large! Upload songs of size less than 20MB.')
-
-class SongMetadataForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    artist = StringField('Artist', validators=[DataRequired()])
-    album = StringField('Album', validators=[DataRequired()])
-    submit = SubmitField('Save Song')
-
-
-class SearchForm(FlaskForm):
-    search_input_text = StringField('What you want to listend to..?', validators=[DataRequired()])
-    submit = SubmitField('Search')
-
 class RequestResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')
@@ -97,6 +66,7 @@ class RequestResetForm(FlaskForm):
         if user is None:
             raise ValidationError(
                 f'No such user exists! Please check your email and try again.')
+
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[

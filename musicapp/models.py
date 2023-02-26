@@ -1,8 +1,8 @@
-from musicapp import db, login_manager, app
-# from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-
+import jwt
+from time import time
 from flask_login import UserMixin
+from flask import current_app as app
+from musicapp import db, login_manager
 
 
 @login_manager.user_loader
@@ -21,14 +21,13 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}')"
 
     def get_reset_token(self, expires_sec=1800):
-        s = Serializer(app.config['SECRET_KEY'].encode('utf-8'), expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
+        return jwt.encode({'user_id': self.id, 'exp': time() + expires_sec}, key=app.config['SECRET_KEY'])
 
     @staticmethod
     def verify_reset_token(token):
-        s = Serializer(app.config['SECRET_KEY'].encode('utf-8'))
         try:
-            user_id = s.loads(token)['user_id']
+            user_id = jwt.decode(token, key=app.config['SECRET_KEY'], algorithms=['HS256'])[
+                'user_id']
         except:
             return None
         return User.query.get(user_id)
